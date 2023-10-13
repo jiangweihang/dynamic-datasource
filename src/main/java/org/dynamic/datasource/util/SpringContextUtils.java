@@ -23,4 +23,16 @@ public class SpringContextUtils {
         }
     }
     
+    public static <T> T getBean(String name) {
+        return (T) context.getBean(name);
+    }
+    
+    public static <T> T getBean(String name, Class<T> clazz) {
+        return (T) context.getBean(name, clazz);
+    }
+    
+    public static <T> T getBean(Class<T> clazz) {
+        return context.getBean(clazz);
+    }
+    
 }

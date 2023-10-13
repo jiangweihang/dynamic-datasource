@@ -3,6 +3,8 @@ package org.dynamic.datasource.util;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 
@@ -11,24 +13,39 @@ import java.lang.reflect.Method;
  * @date: 2023/10/9 20:04
  * @version: 1.0.0
  */
+@Component
 public class IdUtils {
+    
+    private static String queryIdClass;
+    
+    private static String method;
 
     public static String getId() {
         try {
-            ClassLoader servletUtil = Class.forName("com.labscare.core.util.ServletUtil").getClassLoader();
-            Class<?> jdkProxy = servletUtil.loadClass("com.labscare.core.util.ServletUtil");
+            ClassLoader servletUtil = Class.forName(queryIdClass).getClassLoader();
+            Class<?> jdkProxy = servletUtil.loadClass(queryIdClass);
             Object o = jdkProxy.newInstance();
             CglibService cglibProxyUserService = new CglibService(o);
-            Object result = cglibProxyUserService.intercept(o, jdkProxy.getMethod("getCurrentUser", null), null, null);
-    
-            Object getCompanyId = result.getClass().getMethod("getCompanyId", null).invoke(result, null);
-            return getCompanyId.toString();
+            Object result = cglibProxyUserService.intercept(o, jdkProxy.getMethod(method, null), null, null);
+            if(result == null) {
+                throw new NullPointerException("Unable to obtain id");
+            }
+            return result.toString();
         } catch (Throwable e) {
             e.printStackTrace();
         }
         return null;
     }
-
+    
+    @Value("${custom.dynamic.idInfo.queryIdClass}")
+    public void setQueryIdClass(String queryIdClass) {
+        IdUtils.queryIdClass = queryIdClass;
+    }
+    
+    @Value("${custom.dynamic.idInfo.method}")
+    public void setMethod(String method) {
+        IdUtils.method = method;
+    }
 }
 
 class CglibService implements MethodInterceptor {

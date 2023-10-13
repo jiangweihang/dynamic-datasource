@@ -2,4 +2,4 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=org.dynamic.datas
 
 org.springframework.context.ApplicationContextInitializer=org.dynamic.datasource.config.SpringContextInit
 
-org.springframework.boot.SpringApplicationRunListener=org.dynamic.datasource.listener.MongoInitListener
+#org.springframework.boot.SpringApplicationRunListener=org.dynamic.datasource.listener.MongoInitListener

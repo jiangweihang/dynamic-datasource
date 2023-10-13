@@ -27,11 +27,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 暂时废弃不用
  * @author: JiangWH
  * @date: 2023/10/9 18:13
  * @version: 1.0.0
  */
-@Component
+//@Component
 public class DynamicDataSourceConfig {
     
     private final static Logger log = LoggerFactory.getLogger(DynamicDataSourceConfig.class);

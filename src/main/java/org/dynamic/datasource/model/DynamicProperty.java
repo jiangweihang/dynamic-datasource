@@ -20,6 +20,12 @@ public class DynamicProperty {
     
     private IdInfo idInfo;
     
+    private String defaultDataSourceName;
+    
+    private String defaultMongoSourceName;
+    
+    private DataSourceConfig dataSourceConfig;
+    
     public TableInfoConfig getTableInfo() {
         return tableInfo;
     }
@@ -50,5 +56,29 @@ public class DynamicProperty {
     
     public void setIdInfo(IdInfo idInfo) {
         this.idInfo = idInfo;
+    }
+    
+    public String getDefaultDataSourceName() {
+        return defaultDataSourceName;
+    }
+    
+    public void setDefaultDataSourceName(String defaultDataSourceName) {
+        this.defaultDataSourceName = defaultDataSourceName;
+    }
+    
+    public String getDefaultMongoSourceName() {
+        return defaultMongoSourceName;
+    }
+    
+    public void setDefaultMongoSourceName(String defaultMongoSourceName) {
+        this.defaultMongoSourceName = defaultMongoSourceName;
+    }
+    
+    public DataSourceConfig getDataSourceConfig() {
+        return dataSourceConfig;
+    }
+    
+    public void setDataSourceConfig(DataSourceConfig dataSourceConfig) {
+        this.dataSourceConfig = dataSourceConfig;
     }
 }

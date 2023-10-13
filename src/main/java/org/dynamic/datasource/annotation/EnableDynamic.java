@@ -1,9 +1,9 @@
 package org.dynamic.datasource.annotation;
 
 import org.dynamic.datasource.aop.ScheduleAop;
-import org.dynamic.datasource.config.DynamicDataSourceConfig;
 import org.dynamic.datasource.config.InterceptorConfig;
 import org.dynamic.datasource.listener.MongoBeanListener;
+import org.dynamic.datasource.util.IdUtils;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;
@@ -17,7 +17,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@Import({DynamicDataSourceConfig.class, MongoBeanListener.class, ScheduleAop.class, InterceptorConfig.class})
+@Import({MongoBeanListener.class, ScheduleAop.class, InterceptorConfig.class, IdUtils.class})
 public @interface EnableDynamic {
     
     boolean value() default true;
