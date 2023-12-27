@@ -6,22 +6,17 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.dynamic.datasource.config.DynamicDataSource;
 import org.dynamic.datasource.config.mongo.MultiMongoTemplate;
 import org.dynamic.datasource.model.*;
-import org.dynamic.datasource.util.SpringContextUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
 import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.net.UnknownHostException;
 import java.sql.Connection;
@@ -55,10 +50,10 @@ public class MongoBeanListener implements BeanPostProcessor {
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         if(beanName.equals(dynamicProperty.getDefaultMongoSourceName())) {
-            System.out.println("=======================查询到了MongoTemplate=======================" + beanName);
+            log.info("=======================查询到了MongoTemplate=======================" + beanName);
             return mongoTemplate(mongoDbFactory);
         } else if(beanName.equals(dynamicProperty.getDefaultDataSourceName())) {
-            System.out.println("=======================查询到了默认数据源(DataSource)=======================" + beanName);
+            log.info("=======================查询到了默认数据源(DataSource)=======================" + beanName);
             dataSource = customDataSource((DataSource) bean);
             return dataSource;
         }
@@ -71,12 +66,12 @@ public class MongoBeanListener implements BeanPostProcessor {
         Map<Object, Object> targetDataSources = new HashMap<>();
         if (dataBaseInfos.size() > 0) {
             for (DataBaseInfo info : dataBaseInfos) {
+                String id = info.getId();
                 HikariConfig hikariConfig = new HikariConfig();
                 BeanUtils.copyProperties(info, hikariConfig);
                 hikariConfig.setJdbcUrl(info.getUrl());
-                targetDataSources.put(info.getId(), new HikariDataSource(hikariConfig));
-                DynamicSourceInfo.add(info.getId());
-                log.info("租户[{}}数据库配置初始化完毕", info.getId());
+                targetDataSources.put(id, new HikariDataSource(hikariConfig));
+                log.info("租户[{}}数据库配置初始化完毕", id);
             }
         }
         return new DynamicDataSource(defaultDataSource, targetDataSources);
@@ -96,12 +91,20 @@ public class MongoBeanListener implements BeanPostProcessor {
                 }
                 
                 DataBaseInfo dbSource = new DataBaseInfo();
-                dbSource.setId(rs.getString(dynamicProperty.getTableInfo().getId()));
+                String id = rs.getString(dynamicProperty.getTableInfo().getId());
+                String url = rs.getString(dynamicProperty.getTableInfo().getUrlColumn());
+                dbSource.setId(id);
                 dbSource.setDriverClassName(driver);
-                dbSource.setUrl(rs.getString(dynamicProperty.getTableInfo().getUrlColumn()));
+                dbSource.setUrl(url);
                 dbSource.setUsername(rs.getString(dynamicProperty.getTableInfo().getUsernameColumn()));
                 dbSource.setPassword(rs.getString(dynamicProperty.getTableInfo().getPasswordColumn()));
+                String[] split = url.split("//")[1].split(":");
+                dbSource.setHost(split[0]);
+                dbSource.setPort(split[1].split("/")[0]);
+                dbSource.setDatabaseName(url.split(":")[2].split("/")[0]);
                 result.add(dbSource);
+                DynamicSourceInfo.add(id);
+                DynamicSourceInfo.add(id, dbSource);
             }
             rs.close();
             ps.close();
@@ -147,6 +150,18 @@ public class MongoBeanListener implements BeanPostProcessor {
                 builder.maxConnectionLifeTime(2400000);
                 builder.readPreference(ReadPreference.primary());
                 final MongoClientOptions options = builder.build();
+    
+                MongoDataBaseInfo info = new MongoDataBaseInfo();
+                info.setId(rs.getString(mongoInfo.getId()));
+                info.setDatabaseName(mongoDataBaseName);
+                info.setMongoProDatabase(rs.getString(mongoInfo.getMongoProDatabase()));
+                info.setHost(rs.getString(mongoInfo.getHostColumn()));
+                info.setPort(rs.getString(mongoInfo.getPortColumn()));
+                info.setUsername(rs.getString(mongoInfo.getUsernameColumn()));
+                info.setPassword(rs.getString(mongoInfo.getPasswordColumn()));
+                info.setMongoAuthDatabase(rs.getString(mongoInfo.getAuthDataBaseColumn()));
+                DynamicSourceInfo.add(rs.getString(mongoInfo.getId()), info);
+                
                 MongoCredential credential = MongoCredential.createCredential(rs.getString(mongoInfo.getUsernameColumn()),
                         rs.getString(mongoInfo.getAuthDataBaseColumn()), rs.getString(mongoInfo.getPasswordColumn()).toCharArray());
                 MongoClient mongoClient = new MongoClient(new ServerAddress(rs.getString(mongoInfo.getHostColumn()),

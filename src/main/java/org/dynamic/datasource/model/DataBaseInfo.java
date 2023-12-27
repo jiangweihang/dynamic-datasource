@@ -7,30 +7,21 @@ package org.dynamic.datasource.model;
  */
 public class DataBaseInfo {
     
-    /**
-     * unique id
-     */
     private String id;
     
-    /**
-     * 驱动名称
-     */
     private String driverClassName;
     
-    /**
-     * 数据库连接URL
-     */
     private String url;
     
-    /**
-     * 用户名
-     */
     private String username;
     
-    /**
-     * 密码
-     */
     private String password;
+    
+    private String host;
+    
+    private String port;
+    
+    private String databaseName;
     
     public String getId() {
         return id;
@@ -70,5 +61,29 @@ public class DataBaseInfo {
     
     public void setPassword(String password) {
         this.password = password;
+    }
+    
+    public String getHost() {
+        return host;
+    }
+    
+    public void setHost(String host) {
+        this.host = host;
+    }
+    
+    public String getPort() {
+        return port;
+    }
+    
+    public void setPort(String port) {
+        this.port = port;
+    }
+    
+    public String getDatabaseName() {
+        return databaseName;
+    }
+    
+    public void setDatabaseName(String databaseName) {
+        this.databaseName = databaseName;
     }
 }

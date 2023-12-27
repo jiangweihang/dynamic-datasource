@@ -46,7 +46,8 @@ custom:
     mongoInfo:
       sql: SELECT * FROM labscare_base_huaxi.t_company  #Mongo租户查询语句
       id: id  #对应租户id
-      databaseColumn: mongoProDatabase  #对应数据库
+      databaseColumn: labscare_core  #对应数据库
+      mongoProDatabase: pro  #对应统计数据库
       hostColumn: mongoHost  #地址
       portColumn: mongoPort  #端口
       usernameColumn: mongoUserName  #验证用户名

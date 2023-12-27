@@ -14,6 +14,8 @@ public class MongoInfoConfig {
     
     private String databaseColumn;
     
+    private String mongoProDatabase;
+    
     private String hostColumn;
     
     private String portColumn;
@@ -86,5 +88,13 @@ public class MongoInfoConfig {
     
     public void setAuthDataBaseColumn(String authDataBaseColumn) {
         this.authDataBaseColumn = authDataBaseColumn;
+    }
+    
+    public String getMongoProDatabase() {
+        return mongoProDatabase;
+    }
+    
+    public void setMongoProDatabase(String mongoProDatabase) {
+        this.mongoProDatabase = mongoProDatabase;
     }
 }
